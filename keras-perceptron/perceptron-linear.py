@@ -16,9 +16,18 @@ config = run.config
 img_width = X_train.shape[1]
 img_height = X_train.shape[2]
 
-# one hot encode outputs
+# normalize data
+X_train = X_train.astype('float32')
+X_train /= 255.
+X_test = X_test.astype('float32')
+X_test /= 255.
+
+# one hot encode outputs: Converts each image matrix to One Hot encode output for 0 - 9 so in this case it will be 10 (column) * 60000 (row)
 y_train = np_utils.to_categorical(y_train)
 y_test = np_utils.to_categorical(y_test)
+
+print (y_train[0], y_train.shape)
+#exit()
 labels = range(10)
 
 num_classes = y_train.shape[1]
@@ -26,8 +35,11 @@ num_classes = y_train.shape[1]
 # create model
 model=Sequential()
 model.add(Flatten(input_shape=(img_width,img_height)))
-model.add(Dense(num_classes))
-model.compile(loss='mse', optimizer='adam',
+model.add(Dropout(0.5))
+model.add(Dense(100, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(num_classes, activation='softmax'))
+model.compile(loss='categorical_crossentropy', optimizer='adam',
                 metrics=['accuracy'])
 
 # Fit the model

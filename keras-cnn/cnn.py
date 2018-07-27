@@ -15,7 +15,7 @@ X_train /= 255.
 X_test = X_test.astype('float32')
 X_test /= 255.
 
-#reshape input data
+#reshape input data eg coverting from 2 * 2 to 2 * 2 * 1 which is achieved by last param 1 below.
 X_train = X_train.reshape(X_train.shape[0], config.img_width, config.img_height, 1)
 X_test = X_test.reshape(X_test.shape[0], config.img_width, config.img_height, 1)
 
@@ -27,14 +27,35 @@ labels=range(10)
 
 # build model
 model = Sequential()
+
+#32 is standard size used typically and 3 * 3 is kernel size
+#model.add(Conv2D(32,
+#    (config.first_layer_conv_width, config.first_layer_conv_height),
+#    input_shape=(28, 28,1),
+#    activation='relu'))
+
+model.add(Dropout(0.5))
+
 model.add(Conv2D(32,
-    (config.first_layer_conv_width, config.first_layer_conv_height),
+    (3, 3),
     input_shape=(28, 28,1),
     activation='relu'))
+
+model.add(MaxPooling2D(pool_size=(2, 2)))
+
+model.add(Conv2D(32,
+    (3, 3),
+    input_shape=(28, 28,1),
+    activation='relu'))
+
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
+
+model.add(Dropout(0.5))
+
 model.add(Dense(config.dense_layer_size, activation='relu'))
 model.add(Dense(num_classes, activation='softmax'))
+
 
 model.compile(loss='categorical_crossentropy', optimizer='adam',
                 metrics=['accuracy'])
